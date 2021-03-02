@@ -31,7 +31,7 @@ import static ru.orangesoftware.financisto.datetime.DateUtils.FORMAT_TIME_ISO_86
 
 public class CsvExport extends Export {
 
-    static final String[] HEADER = "date,time,account,amount,currency,original amount,original currency,category,parent,payee,location,project,note".split(",");
+    static final String[] HEADER = "id,date,time,account,amount,currency,original amount,original currency,category,parent,payee,location,project,note".split(",");
 
     private static final MyLocation TRANSFER_IN = new MyLocation();
     private static final MyLocation TRANSFER_OUT = new MyLocation();
@@ -106,12 +106,12 @@ public class CsvExport extends Export {
         Account fromAccount = getAccount(t.fromAccountId);
         if (t.isTransfer()) {
             Account toAccount = getAccount(t.toAccountId);
-            writeLine(w, dt, fromAccount.title, t.fromAmount, fromAccount.currency.id, 0, 0, category, null, TRANSFER_OUT, project, t.note);
-            writeLine(w, dt, toAccount.title, t.toAmount, toAccount.currency.id, 0, 0, category, null, TRANSFER_IN, project, t.note);
+            writeLine(w, t.id, dt, fromAccount.title, t.fromAmount, fromAccount.currency.id, 0, 0, category, null, TRANSFER_OUT, project, t.note);
+            writeLine(w, t.id, dt, toAccount.title, t.toAmount, toAccount.currency.id, 0, 0, category, null, TRANSFER_IN, project, t.note);
         } else {
             MyLocation location = getLocationById(t.locationId);
             Payee payee = getPayee(t.payeeId);
-            writeLine(w, dt, fromAccount.title, t.fromAmount, fromAccount.currency.id, t.originalFromAmount, t.originalCurrencyId,
+            writeLine(w, t.id, dt, fromAccount.title, t.fromAmount, fromAccount.currency.id, t.originalFromAmount, t.originalCurrencyId,
                     category, payee, location, project, t.note);
             if (category != null && category.isSplit() && options.exportSplits) {
                 List<Transaction> splits = db.getSplitsForTransaction(t.id);
@@ -123,10 +123,11 @@ public class CsvExport extends Export {
         }
     }
 
-    private void writeLine(Csv.Writer w, Date dt, String account,
+    private void writeLine(Csv.Writer w, long id, Date dt, String account,
                            long amount, long currencyId,
                            long originalAmount, long originalCurrencyId,
                            Category category, Payee payee, MyLocation location, Project project, String note) {
+        w.value(String.valueOf(id));
         if (dt != null) {
             w.value(FORMAT_DATE_ISO_8601.format(dt));
             w.value(FORMAT_TIME_ISO_8601.format(dt));

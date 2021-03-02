@@ -119,6 +119,7 @@ public class Csv {
             if (value == null) return "";
             if (value.length() == 0) return "\"\"";
 
+            /*
             boolean needQuoting = value.startsWith(" ") || value.endsWith(" ") || (value.startsWith("#") && first);
             if (!needQuoting) {
                 for (char ch : new char[]{'\"', '\\', '\r', '\n', '\t', delimiter}) {
@@ -128,6 +129,8 @@ public class Csv {
                     }
                 }
             }
+            */ boolean needQuoting = true;
+
 
             String result = value.replace("\"", "\"\"");
             if (needQuoting) result = "\"" + result + "\"";
