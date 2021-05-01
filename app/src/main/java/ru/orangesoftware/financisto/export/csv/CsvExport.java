@@ -31,7 +31,10 @@ import static ru.orangesoftware.financisto.datetime.DateUtils.FORMAT_TIME_ISO_86
 
 public class CsvExport extends Export {
 
-    static final String[] HEADER = "id,date,time,account,amount,currency,original amount,original currency,category,parent,payee,location,project,note".split(",");
+    // transfer is 2 transactions in csv in 2 different accounts with same ID.
+    // Same ID is not supported on some apps so they ignore 2nd transaction in csv, breaking balance.
+    //static final String[] HEADER = "id,date,time,account,amount,currency,original amount,original currency,category,parent,payee,location,project,note".split(",");
+    static final String[] HEADER = "date,time,account,amount,currency,original amount,original currency,category,parent,payee,location,project,note".split(",");
 
     private static final MyLocation TRANSFER_IN = new MyLocation();
     private static final MyLocation TRANSFER_OUT = new MyLocation();
@@ -127,7 +130,9 @@ public class CsvExport extends Export {
                            long amount, long currencyId,
                            long originalAmount, long originalCurrencyId,
                            Category category, Payee payee, MyLocation location, Project project, String note) {
-        w.value(String.valueOf(id));
+        // transfer is 2 transactions in csv in 2 different accounts with same ID.
+        // Same ID is not supported on some apps so they ignore 2nd transaction in csv, breaking balance.
+        //w.value(String.valueOf(id));
         if (dt != null) {
             w.value(FORMAT_DATE_ISO_8601.format(dt));
             w.value(FORMAT_TIME_ISO_8601.format(dt));
